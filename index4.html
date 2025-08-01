@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scene Bot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts and Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rammetto+One&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    #chat-widget-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgb(160, 123, 176);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .chat-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 90%;
+      max-width: 600px;
+      background-color: #f4f4f4;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .chat-container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('doodle.jpg') center center / cover no-repeat;
+      opacity: 0.1;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .chat-container::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      background: url('chatbot.png') center center / contain no-repeat;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .chat-container > * {
+      position: relative;
+      z-index: 3;
+    }
+
+    .chat-header {
+      background-color: rgb(160, 123, 176);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header .left {
+      font-family: "Rammetto One", sans-serif;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      color: #000;
+      gap: 10px;
+    }
+
+    .chat-header .image {
+      width: 32px;
+      height: 32px;
+    }
+
+    .chat-header .right {
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .chat-box {
+      height: 350px;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 80%;
+      font-size: 16px;
+      font-family: 'Rubik', sans-serif;
+      word-wrap: break-word;
+    }
+
+    .user {
+      align-self: flex-end;
+      background-color: rgb(205, 181, 215);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background-color: #ffffff;
+      color: #000;
+      font-weight: 600;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      gap: 10px;
+      background-color: transparent;
+    }
+
+    .chat-input input {
+      flex: 1;
+      border: 2px solid #e0e0e0;
+      border-radius: 30px;
+      padding: 10px 15px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .chat-input button {
+      background-color: rgb(160, 123, 176);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .chat-box {
+        height: 280px;
+      }
+
+      .chat-header .left {
+        font-size: 20px;
+      }
+
+      .chat-container::after {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button id="chat-widget-btn">💬</button>
+
+  <div class="chat-container" id="chat-container">
+    <div class="chat-header">
+      <div class="left"><img src="chatbot3.png" class="image" alt="Bot"/> Scene Bot</div>
+      <div class="right" id="close-chat">✖</div>
+    </div>
+    <div class="chat-box" id="chat-box"></div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Type your message..." />
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <script>
+    const sessionId = crypto.randomUUID();
+    const chatBtn = document.getElementById('chat-widget-btn');
+    const chatWindow = document.getElementById('chat-container');
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+    const API_URL = "https://scene-bot-backend.onrender.com/query";
+    const RESET_URL = "https://scene-bot-backend.onrender.com/reset/" + sessionId;
+
+    function appendMessage(text, sender) {
+      const div = document.createElement('div');
+      div.className = `message ${sender}`;
+      div.innerText = text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+      appendMessage(message, 'user');
+      userInput.value = '';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: message, session_id: sessionId })
+        });
+        const data = await res.json();
+        appendMessage(data.answer || "⚠️ No reply from server.", 'bot');
+      } catch (err) {
+        console.error(err);
+        appendMessage("⚠️ Could not connect to backend.", 'bot');
+      }
+    }
+
+    userInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    chatBtn.onclick = async () => {
+      chatWindow.style.display = 'flex';
+      chatBtn.style.display = 'none';
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: "start", session_id: sessionId })
+        });
+        const data = await res.json();
+        appendMessage(data.answer || "👋 Hi there! I'm Scene Bot.", 'bot');
+      } catch {
+        appendMessage("👋 Hi there! I'm Scene Bot.", 'bot');
+      }
+    };
+
+    document.getElementById('close-chat').onclick = async () => {
+      await fetch(RESET_URL).catch(console.warn);
+      chatWindow.style.display = 'none';
+      chatBtn.style.display = 'block';
+      chatBox.innerHTML = '';
+    };
+  </script>
+
+</body>
+</html>
