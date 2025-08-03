@@ -90,7 +90,7 @@
 
     .chat-header .left {
       font-family: "Rammetto One", sans-serif;
-      font-size: 30px;
+      font-size: 25px;
       font-weight: 100;
       display: flex;
       align-items: center;
@@ -202,12 +202,18 @@
       border-radius: 50%;
     }
       .chat-header {
-        font-size: 18px;
+        font-size: 13px;
       }
-
+      .left .image{
+        width: 13%;
+      }
+      .right{
+        font-size: 20px;
+      }
       .chat-container {
-        margin-top: 22%;
+        margin-top: 10%;
         right: 0;
+        height:600px;
         margin-right: 5%;
         position: fixed;
         width: 90%;
@@ -215,6 +221,15 @@
 
       .chat-box {
         height: 350px;
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 10px;
+      
+      }
+      .chat-input{
+  
+        margin-top: 0px; 
+        padding: 10px;  
       }
 
       .message {
@@ -282,7 +297,7 @@
     .chat-container {
         margin-top: 7%;
         right: 0;
-        margin-right: 6%;
+        margin-right: 10%;
         width: 900px;
         position: fixed;
       }
@@ -298,14 +313,16 @@
       padding: 10px 15px;
       border-radius: 50%;
     }
+    
   }
-  @media (min-width:1400px) {
+  @media (min-width:1400px){
     .chat-container {
         position: fixed; 
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%); 
         margin: 0;
+        
       }
   }
       
