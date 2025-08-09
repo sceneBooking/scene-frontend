@@ -5,7 +5,6 @@
   <title>Scene Bot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Fonts and Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
@@ -20,18 +19,16 @@
       padding: 0;
     }
     #chat-widget-btn {
-  background-color: rgb(160, 123, 176);
-  border: none;
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  font-size: 30px;
-  padding: 10px 15px;
-  border-radius: 50%;
-  z-index: 999;
-}
-
-
+      background-color: rgb(160, 123, 176);
+      border: none;
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      font-size: 30px;
+      padding: 10px 15px;
+      border-radius: 50%;
+      z-index: 999;
+    }
 
     .chat-container {
       position: fixed;
@@ -227,9 +224,9 @@
       
       }
       .chat-input{
-  
+    
         margin-top: 0px; 
-        padding: 10px;  
+        padding: 10px;   
       }
 
       .message {
@@ -326,7 +323,7 @@
       }
   }
       
-   
+    
   </style>
 </head>
 <body>
@@ -357,7 +354,7 @@
     function appendMessage(text, sender) {
       const div = document.createElement('div');
       div.className = `message ${sender}`;
-      div.innerText = text;
+      div.innerHTML = text; // THE ONLY CHANGE IS ON THIS LINE
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
